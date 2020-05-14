@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-class Angajat : public IE {
+class Angajat {
 private:
 	int id, gradAcces;
 	string nume;
@@ -30,6 +30,10 @@ public:
 		this->gradAcces = a.gradAcces;
 	}
 
+	Angajat(string line, string delim) {
+		this->loadFromString(line, delim);
+	}
+	
 	int getId() {
 		return this->id;
 	}
@@ -62,6 +66,12 @@ public:
 		this->email = newEmail;
 	}
 
+	Angajat* clone()
+	{
+		Angajat* a = new Angajat(this->id, this->nume, this->email, this->gradAcces);
+		return a;
+	}
+
 	Angajat& operator=(const Angajat& a) {
 		this->id = a.id;
 		this->nume = a.nume;
@@ -70,37 +80,39 @@ public:
 		return *this;
 	}
 
-	void copy(IE* OI)
-	{
-		Angajat* a = (Angajat*)OI;
-		this->id = a->id;
-		this->nume = a->nume;;
-		this->email = a->email;
-		this->gradAcces = a->gradAcces;
-	}
-
-	bool equals(IE* OI) {
-		return (this->id == ((Angajat*)OI)->id);
-	}
-
-	IE* clone() {
-		Angajat* newAngajat = new Angajat;
-		newAngajat->id = this->id;
-		newAngajat->nume = this->nume;
-		newAngajat->email = this->email;
-		newAngajat->gradAcces = this->gradAcces;
-		return newAngajat;
-	}
-
 	string toString(string delim) {
 		string grad = to_string(this->gradAcces);
 		string id = to_string(this->id);
-		string s = id + delim + this->nume + delim + this->email + delim + grad;
+		string s =id + delim + this->nume + delim + this->email + delim + grad;
 		return s;
 	}
 
-	bool operator==(IE* OI) {
-		return(this->id == ((Angajat*)OI)->id and this->email == ((Angajat*)OI)->email
-			and this->gradAcces == ((Angajat*)OI)->gradAcces and this->nume == ((Angajat*)OI)->nume);
+	bool operator==(const Angajat& t) {
+		return(this->id == t.id and this->email == t.email
+			and this->gradAcces == t.gradAcces and this->nume == t.nume);
+	}
+
+	bool operator!=(const Angajat& t) {
+		return(this->id != t.id and this->email != t.email
+			and this->gradAcces != t.gradAcces and this->nume != t.nume);
+	}
+
+	void loadFromString(string s, string delim)
+	{
+		int pos;
+
+		pos = s.find(delim);
+		this->id = stoi(s.substr(0, pos));
+		s = s.erase(0, pos + 1);
+
+		pos = s.find(delim);
+		this->nume = s.substr(0, pos);
+		s = s.erase(0, pos + 1);
+
+		pos = s.find(delim);
+		this->email = s.substr(0, pos);
+		s = s.erase(0, pos + 1);
+
+		this->gradAcces = stoi(s.substr(0));
 	}
 };
