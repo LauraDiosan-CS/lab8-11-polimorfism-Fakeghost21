@@ -7,6 +7,7 @@ using namespace std;
 #include "ServiceAngajat.h"
 #include "ServiceMedicament.h"
 #include <assert.h>
+#include <cstdlib>
 class TesteService {
 private:
 	ServiceAngajat angajat;
@@ -197,6 +198,31 @@ private:
 			assert(false);
 		}
 	}
+	void testRandom()
+	{
+		int capacity = 100 + rand() % 100;
+		Repository<Angajat>* repoTestAng = new RepositoryFileCSV<Angajat>("AngajatTestRandom.txt");
+		ServiceAngajat sAngTest(*repoTestAng);
+		sAngTest.clearEntity();
+		for (int i = 0; i < capacity; i++)
+		{
+			Angajat a = this->angajat.generareRandom();
+			sAngTest.addElem(a.getId(), a.getNume(), a.getEmail(), a.getGrad());
+		}
+		int nrLogin = rand() % capacity;
+		int verify;
+		for (int i = 0; i < 1000; i++)
+		{
+			verify = rand() % capacity;
+			if (sAngTest.getALL()[nrLogin]->getGrad() > sAngTest.getALL()[verify]->getGrad())
+			{
+				sAngTest.schimbareGrad(sAngTest.getALL()[verify]->getId(), -1);
+				assert(sAngTest.getALL()[verify]->getGrad() == -1);
+			}
+			else assert(sAngTest.getALL()[nrLogin]->getGrad() <= sAngTest.getALL()[verify]->getGrad());
+		}
+
+	}
 public:
 	TesteService(ServiceAngajat& s1, MedicineService& s2)
 	{
@@ -208,6 +234,7 @@ public:
 		this->testeExceptii();
 		this->testLogin();
 		this->testeCerinta();
+		this->testRandom();
 		cout << "Au rulat testele pentru Service!" << endl;
 	}
 };
