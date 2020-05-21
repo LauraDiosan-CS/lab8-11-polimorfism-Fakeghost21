@@ -2,6 +2,10 @@
 #include "Repository.h"
 #include "Angajat.h"
 #include "MyExceptionClass.h"
+#include <cstdlib>
+string pool = "ABCDEFHIJKLMNOPQRSTUWY"
+"abcdefghijklmopqrstuwxy";
+int poolSize = sizeof(pool) - 1;
 class ServiceAngajat {
 private:
 	Repository<Angajat>* r;
@@ -50,11 +54,16 @@ public:
 		}
 	}
 
-	void addElem(int idN, string numeN, string emailN, int gradAccesN) {
-		if (gradAccesN < 0)
-			throw MyExcept("Grad de acces invalid!");
+	void addElem(int idN, string numeN, string emailN, int gradAccesN) throw(MyExcept) {
 		Angajat a = Angajat(idN, numeN, emailN, gradAccesN);
 		this->r->add(&a);
+	}
+
+	void schimbareGrad(int id, int newGrad) throw(MyExcept)
+	{
+		Angajat a = *this->look4id(id);
+		a.setGrad(newGrad);
+		this->r->update(this->look4id(id), &a);
 	}
 
 	void delElem(int id)
@@ -83,6 +92,28 @@ public:
 		catch (MyExcept & exc) {
 			throw exc;
 		}
+	}
+
+	char getRandomCharacter()
+	{
+		return pool[rand() % poolSize];
+	}
+	string randomStrings()
+	{
+		string s;
+		for (int i = 0; i <= 10; i++)
+			s += this->getRandomCharacter();
+		return s;
+	}
+	Angajat generareRandom()
+	{
+		string nume, email;
+		nume = this->randomStrings();
+		email = this->randomStrings();
+		int id = rand() % 10000;
+		int gradAcces = rand() % 100;
+		Angajat a(id, nume, email, gradAcces);
+		return a;
 	}
 
 	void clearEntity() {
